@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@toast-ui/chart": "^4.6.1",
+    "module-alias": "^2.2.3"
+  },
+  "_moduleAliases": {
+    "@toast-ui/chart": "node_modules/@toast-ui/chart/dist/toastui-chart.min.js"
+  }
+}
