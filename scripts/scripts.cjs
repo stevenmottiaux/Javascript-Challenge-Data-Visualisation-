@@ -17,10 +17,12 @@ const yearData = {};
 
 // Extraire les années des en-têtes
 const headers = rows[1].querySelectorAll('th');
+const years = [];
 headers.forEach((th, index) => {
   if (index > 1) {
     const year = th.textContent.trim();
     if (year) {
+      years.push(year);
       yearData[year] = [];
     }
   }
@@ -28,37 +30,69 @@ headers.forEach((th, index) => {
 
 // Extraire les données des pays et des années
 rows.forEach((row, index) => {
-  if (index <= 1) return; // Ignorer les deux premières lignes (en-têtes)
+  if (index <= 0) return; // Ignorer la première ligne (en-tête)
   const cells = row.querySelectorAll('td');
   if (cells.length > 1) {
-    const country = cells[1].textContent.trim();
+    const country = cells[0].textContent.trim(); // Utiliser cells[0] pour le pays
     if (country) {
       countries.push(country);
-      Object.keys(yearData).forEach((year, yearIndex) => {
-        const value = parseFloat(cells[yearIndex + 2]?.textContent) || 0;
+      years.forEach((year, yearIndex) => {
+        const value = parseFloat(cells[yearIndex + 1]?.textContent.replace(',', '.')) || 0; // yearIndex + 1 pour les données
         yearData[year].push(value);
       });
     }
   }
 });
 
-const el = document.getElementById('chart');
-const data = {
-  categories: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  series: [
-    {
-      name: 'Budget',
-      data: [5000, 3000, 5000, 7000, 6000, 4000, 1000],
-    },
-    {
-      name: 'Income',
-      data: [8000, 4000, 7000, 2000, 6000, 3000, 5000],
-    },
-  ],
-};
+// Calculer le min et max des données
+let minValue = Infinity;
+let maxValue = -Infinity;
+
+Object.values(yearData).forEach(yearValues => {
+  yearValues.forEach(value => {
+    if (value < minValue) minValue = value;
+    if (value > maxValue) maxValue = value;
+  });
+});
+
+// Arrondir le max à la centaine supérieure
+maxValue = Math.ceil(maxValue / 100) * 100;
+minValue = Math.floor(minValue / 100) * 100;
+
+// Calculer un intervalle approprié
+const interval = Math.ceil(maxValue / 5 / 100) * 100;
+
+const el = document.getElementById('graph1');
+  const data = {
+    categories: years, // Utiliser les années comme catégories
+    series: countries.map((country, index) => ({
+      name: country,
+      data: years.map(year => yearData[year][index])
+    }))
+  };
+
 const options = {
-  chart: { width: 700, height: 400 },
+  chart: { width: 800, height: 700},
+  xAxis: {
+    title: 'Années'
+  },
+  yAxis: {
+    title: 'Valeur',
+    tick: {
+      interval: interval,
+    },
+    min: minValue,
+    max: maxValue
+  },
+  legend: {
+    align: 'bottom',  // Placer la légende en bas
+    visible: true,
+    item: {
+      width: 100,  // Largeur de chaque élément de la légende
+      margin: 5  // Marge entre les éléments de la légende
+    }
+  }
 };
 
-const chart = Chart.barChart({ el, data, options });
+const chart = Chart.columnChart({ el, data, options });
 });
