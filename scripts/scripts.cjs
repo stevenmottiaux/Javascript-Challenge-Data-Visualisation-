@@ -175,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const dataGraph2 = {
     categories: yearsTable2,
     series: countriesTable2.map((country, index) => ({
+      shift: true,
       name: country,
       data: yearsTable2.map((year) => yearDataTable2[year][index]),
     })),
@@ -209,16 +210,23 @@ document.addEventListener("DOMContentLoaded", function () {
   let data3 = [];
   let minValue3 = Infinity;
   let maxValue3 = -Infinity;
+  let dataGraph3 = [];
+
+  $.ajaxSetup({ cache: false }); // Désactiver le cache pour toutes les requêtes AJAX
 
   $.getJSON("https://canvasjs.com/services/data/datapoints.php", function(data) {
-    data3 = data.map(value => ({
-      x: value[0],
-      y: parseInt(value[1])
-    }));
+    $.each(data, function(index, value) {
+      data3.push({
+        x: value[0],
+        y: parseFloat(value[1]),
+      });
+    });
 
-    data3.forEach((point) => {
-      if (point.y < minValue3) minValue3 = point.y;
-      if (point.y > maxValue3) maxValue3 = point.y;
+    console.log(data3);
+
+    data3.forEach((value) => {
+      if (value.y < minValue3) minValue3 = value.y;
+      if (value.y > maxValue3) maxValue3 = value.y;
     });
 
     console.log(maxValue3);
@@ -248,9 +256,64 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       xAxis: {
         title: "X",
+        tick: {
+          interval: 1,
+        },
+      },
+      series: {
+        shift: true,
       },
     };
+   const chart = Chart.lineChart({ el: el3, data: dataGraph3, options: optionsGraph3 });
 
-    Chart.lineChart({ el: el3, data: dataGraph3, options: optionsGraph3 });
-  });
+   setInterval(function() {
+    $.getJSON("https://canvasjs.com/services/data/datapoints.php", function(newData) {
+      data3 = []; // Réinitialiser les données
+      $.each(newData, function(index, value) {
+        data3.push({
+          x: value[0],
+          y: parseFloat(value[1]),
+        });
+      });
+
+  // Recréer le graphique avec les nouvelles données
+  const el3 = document.getElementById("graph3");
+  const dataGraph3 = {
+    categories: data3.map(point => point.x),
+    series: [{
+      name: "Série 1",
+      data: data3.map(point => point.y)
+    }]
+  };
+
+  const optionsGraph3 = {
+    chart: { width: 800, height: 600 },
+    yAxis: {
+      title: "Y",
+      tick: {
+        interval: interval3,
+      },
+      min: minValue3,
+      max: maxValue3,
+    },
+    xAxis: {
+      title: "X",
+      tick: {
+        interval: 1,
+      },
+    },
+    series: {
+      shift: true,
+    },
+  };
+
+  // Détruire l'ancien graphique et créer un nouveau
+  el3.innerHTML = ""; // Vider le conteneur du graphique
+  Chart.lineChart({ el: el3, data: dataGraph3, options: optionsGraph3 });
+
+  console.log(data3.map(point => point.y));
+  console.log(data3.map(point => Number(point.x)));
+});
+}, 1000);
+});
 });
