@@ -20,7 +20,7 @@ Graphique 3 (ID`graph3`):
 
 Ce graphique présente les données en temps réel. Les données sont récupérées d'une API à l'URL : https://canvasjs.com/services/data/datapoints.php. Ces données sont mises à jour dans l'API chaque seconde et sont également mise à jour dans le grpahique au même interval. 
 
-![Graphique 3](./images/graph3.png)
+[autoupdatechart.webm](https://github.com/stevenmottiaux/Javascript-Challenge-Data-Visualisation-/assets/112697380/51e19d3a-0a93-49a8-92df-1f1dd2e077e6)
 
 Une version ***Live*** de ces 3 graphiques est disponible à l'adresse : https://stevenmottiaux.github.io/Challenge-Data-Visualisation-ToastUI-Chart/
 
