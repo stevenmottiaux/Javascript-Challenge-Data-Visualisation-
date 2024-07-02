@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   const { Chart } = toastui;
+  const { JSDOM } = require( "jsdom" );
+  const { window } = new JSDOM( "" );
+  const $ = require( "jquery" )( window );
 
   // Créer un nouveau div pour les graphique
   var graphDiv = document.createElement("div");

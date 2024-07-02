@@ -22,7 +22,7 @@ Ce graphique présente les données en temps réel. Les données sont récupér�
 
 [autoupdatechart.webm](https://github.com/stevenmottiaux/Javascript-Challenge-Data-Visualisation-/assets/112697380/51e19d3a-0a93-49a8-92df-1f1dd2e077e6)
 
-Une version ***Live*** de ces 3 graphiques est disponible à l'adresse : https://stevenmottiaux.github.io/Challenge-Data-Visualisation-ToastUI-Chart/
+Une version ***Live*** de ces 3 graphiques est disponible à l'adresse : https://stevenmottiaux.github.io/Javascript-Challenge-Data-Visualisation-/
 
 ## Fonctionnalités
 
@@ -95,21 +95,57 @@ Le fichier `./scripts/scripts.cjs` contient le code JavaScript qui permet de ré
 
 4. **Mise à jour du graphique en temps réel** :
    ```javascript
-   function updateChart() {
+   setInterval(function() {
      $.getJSON("https://canvasjs.com/services/data/datapoints.php", function(newData) {
-       $.each(newData, function(key, value) {
+       data3 = []; // Réinitialiser les données
+       $.each(newData, function(index, value) {
          data3.push({
-           x: parseInt(value[0]),
-           y: parseInt(value[1])
+           x: value[0],
+           y: parseFloat(value[1]),
          });
        });
+
+       // Recréer le graphique avec les nouvelles données
+       const el3 = document.getElementById("graph3");
+       const dataGraph3 = {
+         categories: data3.map(point => point.x),
+         series: [{
+           name: "Série 1",
+           data: data3.map(point => point.y)
+         }]
+       };
+
+       const optionsGraph3 = {
+         chart: { width: 800, height: 600 },
+         yAxis: {
+           title: "Y",
+           tick: {
+             interval: interval3,
+           },
+           min: minValue3,
+           max: maxValue3,
+         },
+         xAxis: {
+           title: "X",
+           tick: {
+             interval: 1,
+           },
+         },
+         series: {
+           shift: true,
+         },
+       };
+
+       // Détruire l'ancien graphique et créer un nouveau
+       el3.innerHTML = ""; // Vider le conteneur du graphique
+       Chart.lineChart({ el: el3, data: dataGraph3, options: optionsGraph3 });
+
+       console.log(data3.map(point => point.y));
+       console.log(data3.map(point => Number(point.x)));
      });
-     chart.addData(data3.map(point => point.y), data3.map(point => point.x));
-     setInterval(updateChart, 1000);
-     updateChart();
-   }
+   }, 1000);
    ```
-   La fonction `updateChart` récupère les nouvelles données de l'API et les ajoute au graphique. Cette fonction est appelée toutes les secondes pour mettre à jour le graphique en temps réel.
+   Cette partie du code utilise `setInterval` pour récupérer les nouvelles données de l'API toutes les secondes, réinitialiser les données, et recréer le graphique avec les nouvelles données.
 
 ### index.html
 
