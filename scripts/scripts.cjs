@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (index <= 0) return; // Ignorer la première ligne (en-tête)
     const cells = row.querySelectorAll("td");
     if (cells.length > 1) {
-      const country = cells[0].textContent.trim(); // Utiliser cells[0] pour le pays
+      const country = cells[0].textContent.trim().replace(/[^a-zA-Z ]/g, ""); // Utiliser cells[0] pour le pays
       if (country) {
         countries.push(country);
         years.forEach((year, yearIndex) => {
@@ -310,9 +310,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Détruire l'ancien graphique et créer un nouveau
   el3.innerHTML = ""; // Vider le conteneur du graphique
   Chart.lineChart({ el: el3, data: dataGraph3, options: optionsGraph3 });
-
-  console.log(data3.map(point => point.y));
-  console.log(data3.map(point => Number(point.x)));
 });
 }, 1000);
 });
